@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+
+# Spotify recreates an unscoped legacy source during upgrades. Keep the signed
+# deb822 source maintained by Cham Linux and remove the duplicate afterwards.
+if [ -f /etc/apt/sources.list.d/spotify.sources ] &&
+   [ -f /etc/apt/sources.list.d/spotify.list ]; then
+  rm -f /etc/apt/sources.list.d/spotify.list
+fi

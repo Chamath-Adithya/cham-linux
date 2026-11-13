@@ -18,7 +18,7 @@ Types: deb
 URIs: https://chamath-adithya.github.io/cham-linux
 Suites: stable
 Components: main
-Architectures: amd64 all
+Architectures: all
 Signed-By: $keyring
 EOF
 
