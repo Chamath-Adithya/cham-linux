@@ -1,0 +1,6 @@
+/home/chamath-adithya/.cache
+/home/chamath-adithya/.local/share/Trash
+/home/chamath-adithya/**/node_modules
+/home/chamath-adithya/.var/app/*/cache
+/home/chamath-adithya/.local/share/containers/storage
+/home/chamath-adithya/.local/share/Steam/steamapps

@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "model": "Lenovo LOQ 15ARP9",
+  "cpu": "AMD Ryzen 7 7435HS",
+  "graphics": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "integratedGraphics": false,
+  "wifi": "MediaTek MT7921",
+  "sleep": { "supported": ["s2idle"], "status": "validation-required" },
+  "secureBoot": { "desired": true, "status": "blocked-by-validation" },
+  "notes": ["Do not force unsupported deep sleep", "Do not publish serial numbers or machine IDs"]
+}

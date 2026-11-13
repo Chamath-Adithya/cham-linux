@@ -1,0 +1,11 @@
+Package: cham-linux-core
+Version: 0.1.0~alpha1
+Section: admin
+Priority: optional
+Architecture: all
+Depends: bash, apt, systemd, ripgrep, iproute2
+Recommends: fwupd, flatpak, snapd, restic, distrobox, podman
+Maintainer: Cham Linux Project <maintainer@invalid.local>
+Description: Cham Linux health, update status, and product identity tools
+ Provides read-mostly system diagnostics and multi-source update visibility.
+ It does not mix foreign distribution repositories into the Ubuntu host.

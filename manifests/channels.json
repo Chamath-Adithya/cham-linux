@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "product": "cham-linux",
+  "channels": {
+    "stable": { "ubuntu": "24.04", "cham": null },
+    "testing": { "ubuntu": "24.04", "cham": "0.1.0-alpha.1" }
+  },
+  "hostPolicy": {
+    "allowedOrigins": ["Ubuntu", "Cham Linux"],
+    "forbiddenSuites": ["noble-proposed", "kali-rolling", "arch"],
+    "thirdPartyReviewRequired": true
+  }
+}

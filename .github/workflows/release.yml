@@ -1,0 +1,18 @@
+name: Draft release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Build exact tag
+        run: make package
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/*.deb dist/SHA256SUMS --draft --verify-tag --generate-notes --title "Cham Linux $GITHUB_REF_NAME"

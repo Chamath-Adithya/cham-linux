@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Cham Linux Doctor
+Comment=Inspect system health and update sources
+Exec=gnome-terminal -- cham doctor
+Icon=utilities-system-monitor
+Terminal=false
+Type=Application
+Categories=System;Settings;

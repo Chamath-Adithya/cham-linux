@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+set -euo pipefail
+version='0.1.0-alpha.1'
+cmd=${1:-help}
+shift || true
+
+pass() { printf 'PASS  %s\n' "$1"; }
+warn() { printf 'WARN  %s\n' "$1"; }
+fail() { printf 'FAIL  %s\n' "$1"; }
+
+doctor() {
+  local bad=0
+  printf 'Cham Linux Doctor %s\n' "$version"
+  printf 'OS: '; . /etc/os-release; printf '%s | Kernel: %s\n' "$PRETTY_NAME" "$(uname -r)"
+  if dpkg --audit | grep -q .; then fail 'incomplete packages'; bad=1; else pass 'package database'; fi
+  if apt-get -s check >/dev/null 2>&1; then pass 'APT dependency graph'; else fail 'APT dependency graph'; bad=1; fi
+  if rg -q '^Suites:.*\bnoble-proposed\b' /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null; then fail 'noble-proposed enabled'; bad=1; else pass 'stable Ubuntu pockets'; fi
+  if rg -q 'kali.org|kali-rolling|archlinux' /etc/apt/sources.list /etc/apt/sources.list.d -g '*.list' -g '*.sources' 2>/dev/null; then fail 'foreign distribution repository on host'; bad=1; else pass 'no Kali/Arch host repository'; fi
+  systemctl is-active --quiet apparmor && pass 'AppArmor active' || { fail 'AppArmor inactive'; bad=1; }
+  systemctl is-active --quiet ufw && pass 'firewall service active' || warn 'firewall service inactive or unreadable'
+  if command -v nvidia-smi >/dev/null; then nvidia-smi --query-gpu=name,driver_version --format=csv,noheader; fi
+  printf 'Sleep modes: '; cat /sys/power/mem_sleep 2>/dev/null || printf 'unavailable\n'
+  if systemctl --failed --no-legend | grep -q .; then warn 'failed system services'; systemctl --failed --no-pager; fi
+  printf '\nExternally bound TCP listeners:\n'
+  ss -lntH | awk '$4 ~ /^0\.0\.0\.0:|^\[::\]:|^\*:/' || true
+  return "$bad"
+}
+
+status() {
+  printf 'Cham Linux %s\n' "$version"
+  printf 'Host: %s | Kernel: %s\n' "$(hostname)" "$(uname -r)"
+  printf 'APT pending: '; apt-get -s dist-upgrade 2>/dev/null | awk '/^[0-9]+ upgraded/ {print; found=1} END {if (!found) print "unavailable"}'
+  if command -v snap >/dev/null; then printf 'Snap pending:\n'; snap refresh --list 2>&1 || true; fi
+  if command -v flatpak >/dev/null; then printf 'Flatpak pending:\n'; flatpak remote-ls --updates 2>&1 || true; fi
+  if command -v distrobox-list >/dev/null; then printf 'Distroboxes:\n'; distrobox-list 2>&1 || true; fi
+  test -f /var/run/reboot-required && printf 'Restart: required\n' || printf 'Restart: not requested\n'
+}
+
+update_check() {
+  printf 'Refreshing APT metadata requires administrator authentication.\n'
+  sudo apt-get update --error-on=any
+  apt-get -s dist-upgrade
+  command -v snap >/dev/null && snap refresh --list || true
+  command -v flatpak >/dev/null && flatpak remote-ls --updates || true
+  command -v fwupdmgr >/dev/null && fwupdmgr get-updates || true
+  echo 'Check only: no updates were installed.'
+}
+
+release_preflight() {
+  local bad=0
+  git_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
+  [[ -n $git_root ]] || { fail 'run inside the Cham Linux repository'; return 1; }
+  git -C "$git_root" diff --quiet && git -C "$git_root" diff --cached --quiet && pass 'clean Git worktree' || { fail 'uncommitted changes'; bad=1; }
+  bash "$git_root/tests/static.sh" && pass 'static checks' || { fail 'static checks'; bad=1; }
+  dpkg --audit | grep -q . && { fail 'package database'; bad=1; } || pass 'package database'
+  systemctl --failed --no-legend | grep -q . && { fail 'failed services exist'; bad=1; } || pass 'no failed services'
+  [[ -f $git_root/reports/loq-latest.json ]] && pass 'LOQ hardware report present' || { fail 'LOQ hardware report missing'; bad=1; }
+  [[ -f $git_root/reports/restore-latest.json ]] && pass 'restore report present' || { fail 'restore report missing'; bad=1; }
+  return "$bad"
+}
+
+case "$cmd" in
+  doctor) doctor ;;
+  status) status ;;
+  update)
+    [[ ${1:-} == --check ]] || { echo 'Only cham update --check is available in alpha.' >&2; exit 2; }
+    update_check
+    ;;
+  release-preflight) release_preflight ;;
+  version|--version|-V) echo "$version" ;;
+  help|-h|--help)
+    echo 'Usage: cham {doctor|status|update --check|release-preflight|version}'
+    ;;
+  *) echo "Unknown command: $cmd" >&2; exit 2 ;;
+esac
