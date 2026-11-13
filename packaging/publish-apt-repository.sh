@@ -13,8 +13,9 @@ cp "$root"/dist/cham-linux-core_*.deb "$site/pool/main/c/cham-linux-core/"
 
 packages="$site/dists/$codename/$component/binary-$arch/Packages"
 cd "$site"
-dpkg-scanpackages --arch "$arch" pool /dev/null >"${packages#$site/}"
-gzip -9 -c "${packages#$site/}" >"${packages#$site/}.gz"
+packages_relative=${packages#"$site"/}
+dpkg-scanpackages --arch "$arch" pool /dev/null >"$packages_relative"
+gzip -9 -c "$packages_relative" >"$packages_relative.gz"
 
 release_dir="$site/dists/$codename"
 cd "$release_dir"
