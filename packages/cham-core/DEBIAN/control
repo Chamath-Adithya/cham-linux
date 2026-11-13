@@ -3,7 +3,7 @@ Version: 0.0.0
 Section: admin
 Priority: optional
 Architecture: all
-Depends: bash, apt, systemd, ripgrep, iproute2
+Depends: bash, apt, curl, jq, systemd, ripgrep, iproute2
 Recommends: fwupd, flatpak, snapd, restic, distrobox, podman
 Maintainer: Cham Linux Project <chamathadithya101@gmail.com>
 Description: Cham Linux health, update status, and product identity tools

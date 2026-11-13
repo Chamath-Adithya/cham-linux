@@ -7,9 +7,10 @@ deb_version=${deb_version//-beta./~beta}
 deb_version=${deb_version//-rc./~rc}
 stage=$(mktemp -d)
 trap 'rm -rf "$stage"' EXIT
-mkdir -p "$root/dist" "$stage/usr/bin"
+mkdir -p "$root/dist" "$stage/usr/bin" "$stage/usr/lib/cham-linux"
 cp -a "$root/packages/cham-core/." "$stage/"
 install -m 0755 "$root/bin/cham" "$stage/usr/bin/cham"
+install -m 0755 "$root/ai/system-report.sh" "$stage/usr/lib/cham-linux/ai-system-report"
 sed -i "s/^Version:.*/Version: $deb_version/" "$stage/DEBIAN/control"
 package="$root/dist/cham-linux-core_${deb_version}_all.deb"
 rm -f "$root"/dist/cham-linux-core_*.deb

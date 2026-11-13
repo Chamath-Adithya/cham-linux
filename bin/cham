@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
-version='0.1.0-alpha.4'
+version='0.1.0-alpha.5'
 cmd=${1:-help}
 shift || true
+script_dir=$(cd "$(dirname "$0")" && pwd)
+if [[ -x /usr/lib/cham-linux/ai-system-report ]]; then
+  ai_reporter=/usr/lib/cham-linux/ai-system-report
+else
+  ai_reporter="$script_dir/../ai/system-report.sh"
+fi
 
 pass() { printf 'PASS  %s\n' "$1"; }
 warn() { printf 'WARN  %s\n' "$1"; }
@@ -65,6 +71,53 @@ ai_status() {
   return "$bad"
 }
 
+ai_report() {
+  "$ai_reporter"
+}
+
+ai_diagnose() {
+  local model=${1:-${CHAM_AI_MODEL:-qwen3.5:9b}}
+  command -v ollama >/dev/null || { fail 'Ollama is not installed'; return 1; }
+  command -v curl >/dev/null || { fail 'curl is not installed'; return 1; }
+  command -v jq >/dev/null || { fail 'jq is not installed'; return 1; }
+  ollama show "$model" >/dev/null 2>&1 || { fail "model not installed: $model"; return 1; }
+  local available_kib
+  available_kib=$(awk '/^MemAvailable:/ { print $2 }' /proc/meminfo)
+  if [[ ${available_kib:-0} -lt 3145728 ]]; then
+    fail 'at least 3 GiB available RAM is required before loading a diagnostic model'
+    printf 'Run cham ai report, close memory-heavy applications, then retry.\n' >&2
+    return 1
+  fi
+  local report payload response
+  report=$(ai_report)
+  payload=$(jq -n --arg model "$model" --arg evidence "$report" '{
+    model: $model,
+    stream: false,
+    options: {temperature: 0},
+    format: {
+      type: "object",
+      properties: {
+        summary: {type: "string"},
+        findings: {type: "array", items: {type: "string"}},
+        safe_next_steps: {type: "array", items: {type: "string"}},
+        escalation_needed: {type: "boolean"}
+      },
+      required: ["summary", "findings", "safe_next_steps", "escalation_needed"]
+    },
+    messages: [{
+      role: "system",
+      content: "You are a local Linux diagnostic assistant. Analyze only the supplied evidence. Do not invent facts. Never recommend automatically running destructive commands, changing kernel configuration, changing drivers, or exposing services. Suggest only read-only checks or clearly reversible next steps. Return JSON matching the requested schema."
+    }, {
+      role: "user",
+      content: $evidence
+    }]
+  }')
+  response=$(curl --fail --silent --show-error --max-time 180 \
+    -H 'Content-Type: application/json' \
+    -d "$payload" http://127.0.0.1:11434/api/chat)
+  jq -r '.message.content | fromjson | "Summary: \(.summary)\n\nFindings:\n" + (.findings | map("- " + .) | join("\n")) + "\n\nSafe next steps:\n" + (.safe_next_steps | map("- " + .) | join("\n")) + "\n\nEscalation needed: \(.escalation_needed)"' <<<"$response"
+}
+
 update_check() {
   printf 'Refreshing APT metadata requires administrator authentication.\n'
   sudo apt-get update --error-on=any
@@ -97,12 +150,16 @@ case "$cmd" in
     ;;
   release-preflight) release_preflight ;;
   ai)
-    [[ ${1:-} == status ]] || { echo 'Usage: cham ai status' >&2; exit 2; }
-    ai_status
+    case ${1:-} in
+      status) ai_status ;;
+      report) ai_report ;;
+      diagnose) shift || true; ai_diagnose "${1:-}" ;;
+      *) echo 'Usage: cham ai {status|report|diagnose [model]}' >&2; exit 2 ;;
+    esac
     ;;
   version|--version|-V) echo "$version" ;;
   help|-h|--help)
-    echo 'Usage: cham {doctor|status|ai status|update --check|release-preflight|version}'
+    echo 'Usage: cham {doctor|status|ai {status|report|diagnose [model]}|update --check|release-preflight|version}'
     ;;
   *) echo "Unknown command: $cmd" >&2; exit 2 ;;
 esac

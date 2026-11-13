@@ -26,6 +26,12 @@ their name, digest, quantization, and license in each project README.
 Run `cham ai status` to inspect GPU capability, local runtime state, and whether
 the Ollama API is exposed on the network.
 
+`cham ai report` creates a bounded, read-only local evidence report. `cham ai
+diagnose [model]` sends that evidence only to the local Ollama endpoint and
+returns structured findings and safe next steps. It cannot execute its output.
+It refuses to load a diagnostic model when less than 3 GiB RAM is available;
+close heavy applications first rather than forcing the laptop into swap pressure.
+
 ## Features to ship
 
 1. **AI health and resource guardrails** — report GPU driver, VRAM, disk space,
@@ -42,6 +48,10 @@ the Ollama API is exposed on the network.
    exposing an API.
 5. **Rollback-aware updates** — package changelog, signed APT metadata, backup
    preflight, and a restart/suspend validation after kernel or NVIDIA updates.
+6. **Kernel observability, not AI kernel mutation** — use existing tracepoints
+   and eBPF tools to collect evidence during a controlled test. A proposed
+   kernel change requires a reproducible trigger, a separate test kernel,
+   rollback boot entry, and suspend/GPU/network validation before promotion.
 
 ## Non-goals
 
