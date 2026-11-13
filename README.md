@@ -10,6 +10,7 @@ Current channel: `alpha`. Current supported hardware profile: Lenovo LOQ 15ARP9 
 ./bin/cham doctor
 ./bin/cham status
 ./bin/cham update --check
+./bin/cham ai status
 ./bin/cham release-preflight
 ```
 
@@ -47,4 +48,4 @@ distrobox assemble create --file containers/distrobox.ini
 
 The repository contains product source and reproducible configuration. Personal files, credentials and database contents belong in encrypted external backups.
 
-See [architecture](docs/ARCHITECTURE.md), [release process](docs/RELEASE.md), [recovery](docs/RECOVERY.md), and the [LOQ validation procedure](docs/LOQ-VALIDATION.md).
+See [architecture](docs/ARCHITECTURE.md), [AI workstation](docs/AI-WORKSTATION.md), [release process](docs/RELEASE.md), [recovery](docs/RECOVERY.md), and the [LOQ validation procedure](docs/LOQ-VALIDATION.md).

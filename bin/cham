@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-version='0.1.0-alpha.2'
+version='0.1.0-alpha.3'
 cmd=${1:-help}
 shift || true
 
@@ -39,6 +39,32 @@ status() {
   test -f /var/run/reboot-required && printf 'Restart: required\n' || printf 'Restart: not requested\n'
 }
 
+ai_status() {
+  local bad=0
+  printf 'Cham Linux AI status\n'
+  if command -v nvidia-smi >/dev/null; then
+    nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader
+  else
+    warn 'NVIDIA GPU not detected'; bad=1
+  fi
+  if command -v ollama >/dev/null; then
+    printf 'Ollama: '; ollama --version
+    printf 'Local models:\n'; ollama list || true
+    if ss -lntH | awk '$4 ~ /(^|:)(0\.0\.0\.0|\[::\]|\*)?:?11434$/ { found=1 } END { exit !found }'; then
+      warn 'Ollama API is exposed beyond localhost on port 11434'
+      printf '  Restrict it to 127.0.0.1 unless you intentionally use remote clients.\n'
+      bad=1
+    else
+      pass 'Ollama API is local-only'
+    fi
+  else
+    warn 'Ollama is not installed'
+  fi
+  if command -v podman >/dev/null; then pass 'Podman available for isolated AI projects'; else warn 'Podman unavailable'; fi
+  if command -v distrobox >/dev/null; then pass 'Distrobox available for isolated toolchains'; else warn 'Distrobox unavailable'; fi
+  return "$bad"
+}
+
 update_check() {
   printf 'Refreshing APT metadata requires administrator authentication.\n'
   sudo apt-get update --error-on=any
@@ -70,9 +96,13 @@ case "$cmd" in
     update_check
     ;;
   release-preflight) release_preflight ;;
+  ai)
+    [[ ${1:-} == status ]] || { echo 'Usage: cham ai status' >&2; exit 2; }
+    ai_status
+    ;;
   version|--version|-V) echo "$version" ;;
   help|-h|--help)
-    echo 'Usage: cham {doctor|status|update --check|release-preflight|version}'
+    echo 'Usage: cham {doctor|status|ai status|update --check|release-preflight|version}'
     ;;
   *) echo "Unknown command: $cmd" >&2; exit 2 ;;
 esac
