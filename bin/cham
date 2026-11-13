@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-version='0.1.0-alpha.3'
+version='0.1.0-alpha.4'
 cmd=${1:-help}
 shift || true
 
@@ -50,7 +50,7 @@ ai_status() {
   if command -v ollama >/dev/null; then
     printf 'Ollama: '; ollama --version
     printf 'Local models:\n'; ollama list || true
-    if ss -lntH | awk '$4 ~ /(^|:)(0\.0\.0\.0|\[::\]|\*)?:?11434$/ { found=1 } END { exit !found }'; then
+    if ss -lntH | awk '$4 == "0.0.0.0:11434" || $4 == "[::]:11434" || $4 == "*:11434" { found=1 } END { exit !found }'; then
       warn 'Ollama API is exposed beyond localhost on port 11434'
       printf '  Restrict it to 127.0.0.1 unless you intentionally use remote clients.\n'
       bad=1
