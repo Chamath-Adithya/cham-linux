@@ -1,0 +1,39 @@
+name: Upstream watch
+on:
+  schedule:
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  report:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Collect upstream versions
+        id: versions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ubuntu=$(curl -fsSL https://changelogs.ubuntu.com/meta-release-lts | awk -F': ' '/^Version:/ {v=$2} END {print v}')
+          restic=$(gh api repos/restic/restic/releases/latest --jq .tag_name)
+          distrobox=$(gh api repos/89luca89/distrobox/releases/latest --jq .tag_name)
+          {
+            echo 'body<<EOF'
+            echo 'Automated discovery report. Versions still require compatibility, VM, rollback, and hardware testing.'
+            echo
+            echo '| Component | Latest discovered | Cham policy |'
+            echo '|---|---:|---|'
+            echo "| Ubuntu LTS | $ubuntu | Host migration is a gated maintenance operation |"
+            echo "| Restic | $restic | Candidate dependency update |"
+            echo "| Distrobox | $distrobox | Candidate development-environment update |"
+            echo
+            echo "Generated from workflow run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+      - name: Open discovery issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BODY: ${{ steps.versions.outputs.body }}
+        run: gh issue create --repo "$GITHUB_REPOSITORY" --title "Upstream watch $(date -u +%Y-%m-%d)" --label upstream --body "$BODY"
