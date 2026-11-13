@@ -1,0 +1,42 @@
+name: Publish APT repository
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  publish:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Install repository tools
+        run: sudo apt-get update && sudo apt-get install -y dpkg-dev apt-utils
+      - name: Import archive signing key
+        env:
+          PRIVATE_KEY: ${{ secrets.CHAM_APT_SIGNING_KEY }}
+        run: printf '%s' "$PRIVATE_KEY" | gpg --batch --import
+      - name: Build package and signed repository
+        env:
+          CHAM_APT_SIGNING_FINGERPRINT: ${{ vars.CHAM_APT_SIGNING_FINGERPRINT }}
+        run: |
+          make package
+          ./packaging/publish-apt-repository.sh site
+      - name: Configure Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa
+        with:
+          path: site
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@f81ad71d2e78487340fb3a9473b9985f51d85c4d

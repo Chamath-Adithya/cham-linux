@@ -25,6 +25,20 @@ Build the Cham package without root:
 make package
 ```
 
+Enable native Cham Linux updates once on a new Ubuntu 24.04 installation:
+
+```bash
+sudo ./install-apt-repository.sh
+```
+
+After that, Ubuntu, official third-party applications, and Cham Linux packages
+use the normal APT workflow:
+
+```bash
+sudo apt update
+sudo apt upgrade
+```
+
 Create the Arch development container after reviewing `containers/distrobox.ini`:
 
 ```bash
