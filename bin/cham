@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-version='0.1.0-alpha.7'
+version='0.1.0-alpha.8'
 cmd=${1:-help}
 shift || true
 script_dir=$(cd "$(dirname "$0")" && pwd)
@@ -140,6 +140,14 @@ update_check() {
   echo 'Check only: no updates were installed.'
 }
 
+experience() {
+  if [[ -x /usr/lib/cham-linux/experience ]]; then
+    exec /usr/lib/cham-linux/experience "${1:-status}"
+  fi
+  echo 'Cham Experience is not installed. Update cham-linux-core first.' >&2
+  return 1
+}
+
 release_preflight() {
   local bad=0
   git_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
@@ -174,9 +182,10 @@ case "$cmd" in
       *) echo 'Usage: cham ai {status|report|diagnose --allow-heavy MODEL}' >&2; exit 2 ;;
     esac
     ;;
+  experience) experience "${1:-status}" ;;
   version|--version|-V) echo "$version" ;;
   help|-h|--help)
-    echo 'Usage: cham {doctor|status|ai {status|report|diagnose --allow-heavy MODEL}|update --check|release-preflight|version}'
+    echo 'Usage: cham {doctor|status|experience {apply|status|reset}|ai {status|report|diagnose --allow-heavy MODEL}|update --check|release-preflight|version}'
     ;;
   *) echo "Unknown command: $cmd" >&2; exit 2 ;;
 esac

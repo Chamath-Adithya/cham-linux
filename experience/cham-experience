@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# Per-user GNOME experience profile.  It intentionally never edits upstream
+# GNOME files and only changes settings for the caller's desktop account.
+set -euo pipefail
+
+wallpaper='file:///usr/share/backgrounds/cham-linux/cham-horizon.svg'
+icon='/usr/share/icons/hicolor/scalable/apps/cham-linux.svg'
+
+has_key() {
+  gsettings list-keys "$1" 2>/dev/null | grep -Fxq "$2"
+}
+
+set_value() {
+  local schema=$1 key=$2 value=$3
+  if has_key "$schema" "$key"; then
+    gsettings set "$schema" "$key" "$value"
+  fi
+}
+
+reset_value() {
+  local schema=$1 key=$2
+  if has_key "$schema" "$key"; then
+    gsettings reset "$schema" "$key"
+  fi
+}
+
+apply() {
+  set_value org.gnome.desktop.interface color-scheme "'prefer-dark'"
+  set_value org.gnome.desktop.interface gtk-theme "'Yaru-blue-dark'"
+  set_value org.gnome.desktop.interface icon-theme "'Yaru-blue'"
+  set_value org.gnome.desktop.interface accent-color "'blue'"
+  set_value org.gnome.desktop.interface show-battery-percentage true
+  set_value org.gnome.desktop.interface clock-show-weekday true
+  set_value org.gnome.desktop.interface clock-show-seconds false
+  set_value org.gnome.desktop.background picture-uri "'$wallpaper'"
+  set_value org.gnome.desktop.background picture-uri-dark "'$wallpaper'"
+  set_value org.gnome.desktop.background picture-options "'zoom'"
+  set_value org.gnome.mutter edge-tiling true
+  set_value org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 40
+  set_value org.gnome.shell.extensions.dash-to-dock background-opacity 0.85
+  set_value org.gnome.shell.extensions.dash-to-dock apply-glossy-effect false
+  if has_key org.gnome.shell.extensions.arcmenu menu-button-text; then
+    set_value org.gnome.shell.extensions.arcmenu menu-button-text "'Cham'"
+    set_value org.gnome.shell.extensions.arcmenu menu-button-icon "'$icon'"
+  fi
+  printf '%s\n' 'Cham Experience applied.'
+  printf '%s\n' 'Highlights: calm dark-blue visual system, Cham wallpaper, battery percentage, weekday clock, practical window tiling, and a compact dock.'
+  printf '%s\n' 'Revert only these Cham settings with: cham experience reset'
+}
+
+status() {
+  printf 'Cham Experience\n'
+  printf 'Wallpaper: '; gsettings get org.gnome.desktop.background picture-uri-dark 2>/dev/null || true
+  printf 'Theme: '; gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null || true
+  printf 'Icons: '; gsettings get org.gnome.desktop.interface icon-theme 2>/dev/null || true
+  printf 'Accent: '; gsettings get org.gnome.desktop.interface accent-color 2>/dev/null || true
+  printf 'Tiling: '; gsettings get org.gnome.mutter edge-tiling 2>/dev/null || true
+}
+
+reset() {
+  reset_value org.gnome.desktop.interface color-scheme
+  reset_value org.gnome.desktop.interface gtk-theme
+  reset_value org.gnome.desktop.interface icon-theme
+  reset_value org.gnome.desktop.interface accent-color
+  reset_value org.gnome.desktop.interface show-battery-percentage
+  reset_value org.gnome.desktop.interface clock-show-weekday
+  reset_value org.gnome.desktop.interface clock-show-seconds
+  reset_value org.gnome.desktop.background picture-uri
+  reset_value org.gnome.desktop.background picture-uri-dark
+  reset_value org.gnome.desktop.background picture-options
+  reset_value org.gnome.mutter edge-tiling
+  reset_value org.gnome.shell.extensions.dash-to-dock dash-max-icon-size
+  reset_value org.gnome.shell.extensions.dash-to-dock background-opacity
+  reset_value org.gnome.shell.extensions.dash-to-dock apply-glossy-effect
+  reset_value org.gnome.shell.extensions.arcmenu menu-button-text
+  reset_value org.gnome.shell.extensions.arcmenu menu-button-icon
+  printf '%s\n' 'Cham Experience settings reset to your GNOME defaults.'
+}
+
+case "${1:-status}" in
+  apply) apply ;;
+  status) status ;;
+  reset) reset ;;
+  *) echo 'Usage: cham experience {apply|status|reset}' >&2; exit 2 ;;
+esac

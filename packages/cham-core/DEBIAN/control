@@ -3,9 +3,10 @@ Version: 0.0.0
 Section: admin
 Priority: optional
 Architecture: all
-Depends: bash, apt, curl, jq, systemd, ripgrep, iproute2
+Depends: bash, apt, curl, jq, systemd, ripgrep, iproute2, libglib2.0-bin
 Recommends: fwupd, flatpak, snapd, restic, distrobox, podman
 Maintainer: Cham Linux Project <chamathadithya101@gmail.com>
-Description: Cham Linux health, update status, and product identity tools
- Provides read-mostly system diagnostics and multi-source update visibility.
+Description: Cham Linux health, experience, and product identity tools
+ Provides read-mostly system diagnostics, a reversible GNOME experience layer,
+ and multi-source update visibility.
  It does not mix foreign distribution repositories into the Ubuntu host.

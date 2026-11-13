@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Cham Experience
+Comment=Apply the Cham Linux desktop experience
+Exec=cham experience apply
+Icon=cham-linux
+Terminal=true
+Type=Application
+Categories=Settings;System;
+Keywords=theme;appearance;desktop;cham;

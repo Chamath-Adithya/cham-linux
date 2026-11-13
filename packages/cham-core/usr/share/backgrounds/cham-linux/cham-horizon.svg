@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071323"/><stop offset=".5" stop-color="#132b51"/><stop offset="1" stop-color="#382a67"/></linearGradient>
+    <radialGradient id="glow" cx="72%" cy="24%" r="55%"><stop stop-color="#43c5ff" stop-opacity=".32"/><stop offset="1" stop-color="#43c5ff" stop-opacity="0"/></radialGradient>
+    <linearGradient id="ridge" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#1d4f75"/><stop offset="1" stop-color="#0a1628"/></linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#sky)"/><rect width="1600" height="900" fill="url(#glow)"/>
+  <g fill="#d8f1ff" opacity=".75"><circle cx="160" cy="125" r="1.5"/><circle cx="330" cy="80" r="1"/><circle cx="525" cy="165" r="1.5"/><circle cx="765" cy="93" r="1"/><circle cx="1160" cy="148" r="1.5"/><circle cx="1390" cy="90" r="1"/><circle cx="1490" cy="240" r="1.5"/></g>
+  <path d="M0 630 260 430l170 122 210-257 200 202 185-115 195 208 220-166 160 110v366H0Z" fill="url(#ridge)"/>
+  <path d="M0 715 240 570l190 128 235-200 175 147 206-118 210 165 198-88 146 92v204H0Z" fill="#091526" opacity=".88"/>
+  <path d="M0 790c250-80 430-24 625 22 230 54 400-70 610-34 145 25 250 89 365 122v0H0Z" fill="#050b15"/>
+  <g transform="translate(92 105)" fill="#ebf8ff"><text x="0" y="0" font-family="Ubuntu, sans-serif" font-size="30" font-weight="700" letter-spacing="9">CHAM LINUX</text><text x="2" y="36" font-family="Ubuntu, sans-serif" font-size="16" opacity=".7" letter-spacing="2">CALM POWER FOR CREATIVE WORK</text></g>
+</svg>

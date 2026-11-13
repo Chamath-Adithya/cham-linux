@@ -11,6 +11,7 @@ mkdir -p "$root/dist" "$stage/usr/bin" "$stage/usr/lib/cham-linux"
 cp -a "$root/packages/cham-core/." "$stage/"
 install -m 0755 "$root/bin/cham" "$stage/usr/bin/cham"
 install -m 0755 "$root/ai/system-report.sh" "$stage/usr/lib/cham-linux/ai-system-report"
+install -m 0755 "$root/experience/cham-experience" "$stage/usr/lib/cham-linux/experience"
 sed -i "s/^Version:.*/Version: $deb_version/" "$stage/DEBIAN/control"
 package="$root/dist/cham-linux-core_${deb_version}_all.deb"
 rm -f "$root"/dist/cham-linux-core_*.deb

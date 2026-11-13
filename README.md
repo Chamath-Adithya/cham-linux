@@ -10,6 +10,7 @@ Current channel: `alpha`. Current supported hardware profile: Lenovo LOQ 15ARP9 
 ./bin/cham doctor
 ./bin/cham status
 ./bin/cham update --check
+./bin/cham experience status
 ./bin/cham ai status
 ./bin/cham release-preflight
 ```
@@ -39,6 +40,23 @@ use the normal APT workflow:
 sudo apt update
 sudo apt upgrade
 ```
+
+## Desktop experience
+
+Cham Experience is a small, reversible GNOME user layer: a calm dark-blue
+visual system, original Cham Horizon wallpaper, battery percentage, weekday
+clock, practical window tiling, compact dock, and a branded application menu.
+It uses per-user `gsettings` values only; it never overwrites GNOME, Ubuntu, or
+driver files.
+
+```bash
+cham experience apply
+cham experience status
+cham experience reset
+```
+
+The application launcher is named **Cham Experience**. `reset` changes only
+the settings set by this profile back to GNOME defaults.
 
 Create the Arch development container after reviewing `containers/distrobox.ini`:
 
