@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-version='0.1.0-alpha.6'
+version='0.1.0-alpha.7'
 cmd=${1:-help}
 shift || true
 script_dir=$(cd "$(dirname "$0")" && pwd)
@@ -28,6 +28,15 @@ doctor() {
   if systemctl is-active --quiet apparmor; then pass 'AppArmor active'; else fail 'AppArmor inactive'; bad=1; fi
   if systemctl is-active --quiet ufw; then pass 'firewall service active'; else warn 'firewall service inactive or unreadable'; fi
   if command -v nvidia-smi >/dev/null; then nvidia-smi --query-gpu=name,driver_version --format=csv,noheader; fi
+  if command -v docker >/dev/null; then
+    docker_context=$(docker context show 2>/dev/null || true)
+    if [[ $docker_context == desktop-linux ]] && systemctl is-active --quiet docker; then
+      warn 'Docker Desktop context selected while native Docker Engine is active'
+      printf '  Use: docker context use default\n'
+    elif [[ -n $docker_context ]]; then
+      pass "Docker context: $docker_context"
+    fi
+  fi
   printf 'Sleep modes: '; cat /sys/power/mem_sleep 2>/dev/null || printf 'unavailable\n'
   if systemctl --failed --no-legend | grep -q .; then warn 'failed system services'; systemctl --failed --no-pager; fi
   printf '\nExternally bound TCP listeners:\n'
