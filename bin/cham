@@ -11,13 +11,16 @@ fail() { printf 'FAIL  %s\n' "$1"; }
 doctor() {
   local bad=0
   printf 'Cham Linux Doctor %s\n' "$version"
-  printf 'OS: '; . /etc/os-release; printf '%s | Kernel: %s\n' "$PRETTY_NAME" "$(uname -r)"
+  printf 'OS: '
+  # shellcheck disable=SC1091
+  . /etc/os-release
+  printf '%s | Kernel: %s\n' "$PRETTY_NAME" "$(uname -r)"
   if dpkg --audit | grep -q .; then fail 'incomplete packages'; bad=1; else pass 'package database'; fi
   if apt-get -s check >/dev/null 2>&1; then pass 'APT dependency graph'; else fail 'APT dependency graph'; bad=1; fi
   if rg -q '^Suites:.*\bnoble-proposed\b' /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null; then fail 'noble-proposed enabled'; bad=1; else pass 'stable Ubuntu pockets'; fi
   if rg -q 'kali.org|kali-rolling|archlinux' /etc/apt/sources.list /etc/apt/sources.list.d -g '*.list' -g '*.sources' 2>/dev/null; then fail 'foreign distribution repository on host'; bad=1; else pass 'no Kali/Arch host repository'; fi
-  systemctl is-active --quiet apparmor && pass 'AppArmor active' || { fail 'AppArmor inactive'; bad=1; }
-  systemctl is-active --quiet ufw && pass 'firewall service active' || warn 'firewall service inactive or unreadable'
+  if systemctl is-active --quiet apparmor; then pass 'AppArmor active'; else fail 'AppArmor inactive'; bad=1; fi
+  if systemctl is-active --quiet ufw; then pass 'firewall service active'; else warn 'firewall service inactive or unreadable'; fi
   if command -v nvidia-smi >/dev/null; then nvidia-smi --query-gpu=name,driver_version --format=csv,noheader; fi
   printf 'Sleep modes: '; cat /sys/power/mem_sleep 2>/dev/null || printf 'unavailable\n'
   if systemctl --failed --no-legend | grep -q .; then warn 'failed system services'; systemctl --failed --no-pager; fi
@@ -40,9 +43,9 @@ update_check() {
   printf 'Refreshing APT metadata requires administrator authentication.\n'
   sudo apt-get update --error-on=any
   apt-get -s dist-upgrade
-  command -v snap >/dev/null && snap refresh --list || true
-  command -v flatpak >/dev/null && flatpak remote-ls --updates || true
-  command -v fwupdmgr >/dev/null && fwupdmgr get-updates || true
+  if command -v snap >/dev/null; then snap refresh --list || true; fi
+  if command -v flatpak >/dev/null; then flatpak remote-ls --updates || true; fi
+  if command -v fwupdmgr >/dev/null; then fwupdmgr get-updates || true; fi
   echo 'Check only: no updates were installed.'
 }
 
@@ -50,12 +53,12 @@ release_preflight() {
   local bad=0
   git_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
   [[ -n $git_root ]] || { fail 'run inside the Cham Linux repository'; return 1; }
-  git -C "$git_root" diff --quiet && git -C "$git_root" diff --cached --quiet && pass 'clean Git worktree' || { fail 'uncommitted changes'; bad=1; }
-  bash "$git_root/tests/static.sh" && pass 'static checks' || { fail 'static checks'; bad=1; }
-  dpkg --audit | grep -q . && { fail 'package database'; bad=1; } || pass 'package database'
-  systemctl --failed --no-legend | grep -q . && { fail 'failed services exist'; bad=1; } || pass 'no failed services'
-  [[ -f $git_root/reports/loq-latest.json ]] && pass 'LOQ hardware report present' || { fail 'LOQ hardware report missing'; bad=1; }
-  [[ -f $git_root/reports/restore-latest.json ]] && pass 'restore report present' || { fail 'restore report missing'; bad=1; }
+  if git -C "$git_root" diff --quiet && git -C "$git_root" diff --cached --quiet; then pass 'clean Git worktree'; else fail 'uncommitted changes'; bad=1; fi
+  if bash "$git_root/tests/static.sh"; then pass 'static checks'; else fail 'static checks'; bad=1; fi
+  if dpkg --audit | grep -q .; then fail 'package database'; bad=1; else pass 'package database'; fi
+  if systemctl --failed --no-legend | grep -q .; then fail 'failed services exist'; bad=1; else pass 'no failed services'; fi
+  if [[ -f $git_root/reports/loq-latest.json ]]; then pass 'LOQ hardware report present'; else fail 'LOQ hardware report missing'; bad=1; fi
+  if [[ -f $git_root/reports/restore-latest.json ]]; then pass 'restore report present'; else fail 'restore report missing'; bad=1; fi
   return "$bad"
 }
 
