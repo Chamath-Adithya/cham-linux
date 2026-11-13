@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-version='0.1.0-alpha.5'
+version='0.1.0-alpha.6'
 cmd=${1:-help}
 shift || true
 script_dir=$(cd "$(dirname "$0")" && pwd)
@@ -76,15 +76,18 @@ ai_report() {
 }
 
 ai_diagnose() {
-  local model=${1:-${CHAM_AI_MODEL:-qwen3.5:9b}}
+  local model=${1:-}
   command -v ollama >/dev/null || { fail 'Ollama is not installed'; return 1; }
   command -v curl >/dev/null || { fail 'curl is not installed'; return 1; }
   command -v jq >/dev/null || { fail 'jq is not installed'; return 1; }
   ollama show "$model" >/dev/null 2>&1 || { fail "model not installed: $model"; return 1; }
-  local available_kib
+  [[ -n $model ]] || { fail 'a model name is required'; return 1; }
+  local available_kib swap_free_kib gpu_free_mib
   available_kib=$(awk '/^MemAvailable:/ { print $2 }' /proc/meminfo)
-  if [[ ${available_kib:-0} -lt 3145728 ]]; then
-    fail 'at least 3 GiB available RAM is required before loading a diagnostic model'
+  swap_free_kib=$(awk '/^SwapFree:/ { print $2 }' /proc/meminfo)
+  gpu_free_mib=$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits 2>/dev/null | head -n 1 | tr -dc '0-9')
+  if [[ ${available_kib:-0} -lt 6291456 || ${swap_free_kib:-0} -lt 6291456 || ${gpu_free_mib:-0} -lt 4096 ]]; then
+    fail 'insufficient RAM, swap, or GPU headroom for a local diagnostic model'
     printf 'Run cham ai report, close memory-heavy applications, then retry.\n' >&2
     return 1
   fi
@@ -153,13 +156,18 @@ case "$cmd" in
     case ${1:-} in
       status) ai_status ;;
       report) ai_report ;;
-      diagnose) shift || true; ai_diagnose "${1:-}" ;;
-      *) echo 'Usage: cham ai {status|report|diagnose [model]}' >&2; exit 2 ;;
+      diagnose)
+        shift || true
+        [[ ${1:-} == --allow-heavy ]] || { echo 'Usage: cham ai diagnose --allow-heavy MODEL' >&2; exit 2; }
+        shift
+        ai_diagnose "${1:-}"
+        ;;
+      *) echo 'Usage: cham ai {status|report|diagnose --allow-heavy MODEL}' >&2; exit 2 ;;
     esac
     ;;
   version|--version|-V) echo "$version" ;;
   help|-h|--help)
-    echo 'Usage: cham {doctor|status|ai {status|report|diagnose [model]}|update --check|release-preflight|version}'
+    echo 'Usage: cham {doctor|status|ai {status|report|diagnose --allow-heavy MODEL}|update --check|release-preflight|version}'
     ;;
   *) echo "Unknown command: $cmd" >&2; exit 2 ;;
 esac

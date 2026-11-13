@@ -27,10 +27,12 @@ Run `cham ai status` to inspect GPU capability, local runtime state, and whether
 the Ollama API is exposed on the network.
 
 `cham ai report` creates a bounded, read-only local evidence report. `cham ai
-diagnose [model]` sends that evidence only to the local Ollama endpoint and
-returns structured findings and safe next steps. It cannot execute its output.
-It refuses to load a diagnostic model when less than 3 GiB RAM is available;
-close heavy applications first rather than forcing the laptop into swap pressure.
+diagnose --allow-heavy MODEL` sends that evidence only to the local Ollama
+endpoint and returns structured findings and safe next steps. It cannot execute
+its output. The explicit flag prevents an accidental model load. The command
+requires at least 6 GiB each of available RAM and free swap plus 4 GiB free GPU
+memory; close heavy applications first rather than forcing the laptop into swap
+pressure.
 
 ## Features to ship
 
