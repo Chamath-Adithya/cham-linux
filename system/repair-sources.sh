@@ -15,6 +15,35 @@ sed -i -E 's/[[:space:]]+noble-proposed\b//g' "$source_file"
 if [[ -f /etc/apt/sources.list.d/spotify.list && -f /etc/apt/sources.list.d/spotify.sources ]]; then
   mv /etc/apt/sources.list.d/spotify.list "$backup/spotify.list.disabled"
 fi
+
+# Spotify rotated its repository key. Verify the complete official fingerprint
+# before replacing the old embedded key with a scoped keyring file.
+spotify_key=$(mktemp)
+trap 'rm -f "$spotify_key"' EXIT
+curl -fsSL https://download.spotify.com/debian/pubkey_5384CE82BA52C83A.asc -o "$spotify_key"
+fingerprint=$(gpg --batch --show-keys --with-colons "$spotify_key" | awk -F: '$1 == "fpr" {print $10; exit}')
+expected=E1096BCBFF6D418796DE78515384CE82BA52C83A
+[[ $fingerprint == "$expected" ]] || { echo "Spotify key fingerprint mismatch: $fingerprint" >&2; exit 1; }
+install -d -m 0755 /etc/apt/keyrings
+install -m 0644 "$spotify_key" /etc/apt/keyrings/spotify.asc
+printf '%s\n' \
+  'Types: deb' \
+  'URIs: https://repository.spotify.com' \
+  'Suites: stable' \
+  'Components: non-free' \
+  'Architectures: amd64' \
+  'Signed-By: /etc/apt/keyrings/spotify.asc' \
+  > /etc/apt/sources.list.d/spotify.sources
+
+# These vendors publish amd64 packages only; avoid irrelevant i386 requests.
+mongo=/etc/apt/sources.list.d/mongodb-org-6.0.list
+if [[ -f $mongo ]] && ! grep -q 'arch=' "$mongo"; then
+  sed -i 's/^deb \[ /deb [ arch=amd64 /' "$mongo"
+fi
+antigravity=/etc/apt/sources.list.d/antigravity.list
+if [[ -f $antigravity ]] && ! grep -q 'arch=' "$antigravity"; then
+  sed -i 's/^deb \[/deb [arch=amd64 /' "$antigravity"
+fi
 apt-get update --error-on=any
 apt-get check
 echo "Source repair complete. Backup: $backup"
