@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 root=$(cd "$(dirname "$0")/.." && pwd)
-site=${1:?output directory required}
+site=$(realpath -m "${1:?output directory required}")
 codename=stable
 component=main
 arch=all

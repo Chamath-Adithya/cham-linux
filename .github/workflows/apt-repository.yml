@@ -20,7 +20,7 @@ jobs:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Install repository tools
-        run: sudo apt-get update && sudo apt-get install -y dpkg-dev apt-utils
+        run: sudo apt-get update && sudo apt-get install -y dpkg-dev apt-utils ripgrep shellcheck
       - name: Import archive signing key
         env:
           PRIVATE_KEY: ${{ secrets.CHAM_APT_SIGNING_KEY }}
