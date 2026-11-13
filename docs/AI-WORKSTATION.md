@@ -54,6 +54,11 @@ pressure.
    and eBPF tools to collect evidence during a controlled test. A proposed
    kernel change requires a reproducible trigger, a separate test kernel,
    rollback boot entry, and suspend/GPU/network validation before promotion.
+7. **Local adaptation data** — keep a small, versioned feedback dataset of
+   approved diagnoses and outcomes. Train or fine-tune only inside a disposable
+   container, evaluate against held-out incidents, and retain the base model and
+   rollback path. Raw journals, credentials, private source code, and browser
+   data are excluded by default.
 
 ## Non-goals
 
