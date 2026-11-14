@@ -49,6 +49,8 @@ Learn about the project's purpose and current limits in the
 [product story](docs/PRODUCT-STORY.md). Read the proposed path toward an
 independently maintained distribution in the [product architecture](docs/PRODUCT-ARCHITECTURE.md)
 and the [distribution research and security automation plan](docs/DISTRIBUTION-RESEARCH.md).
+The initial, limited upstream notice matching process is described in
+[security triage](docs/SECURITY-TRIAGE.md).
 On a compatible Ubuntu test installation, review scripts before running them.
 To build the Cham package from a checkout without installing it:
 

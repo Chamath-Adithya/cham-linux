@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "release": "noble",
+  "scope": "Selected cham-linux-core direct dependencies and recommendations; not a complete SBOM or host inventory.",
+  "components": [
+    {"name": "bash", "upstream": "https://packages.ubuntu.com/noble/bash", "ubuntu_packages": ["bash"]},
+    {"name": "apt", "upstream": "https://salsa.debian.org/apt-team/apt", "ubuntu_packages": ["apt"]},
+    {"name": "curl", "upstream": "https://curl.se/", "ubuntu_packages": ["curl", "libcurl4t64"]},
+    {"name": "jq", "upstream": "https://jqlang.org/", "ubuntu_packages": ["jq", "libjq1"]},
+    {"name": "systemd", "upstream": "https://systemd.io/", "ubuntu_packages": ["systemd"]},
+    {"name": "ripgrep", "upstream": "https://github.com/BurntSushi/ripgrep", "ubuntu_packages": ["ripgrep"]},
+    {"name": "iproute2", "upstream": "https://wiki.linuxfoundation.org/networking/iproute2", "ubuntu_packages": ["iproute2"]},
+    {"name": "glib", "upstream": "https://gitlab.gnome.org/GNOME/glib", "ubuntu_packages": ["glib2.0", "libglib2.0-bin"]},
+    {"name": "fwupd", "upstream": "https://fwupd.org/", "ubuntu_packages": ["fwupd"]},
+    {"name": "flatpak", "upstream": "https://flatpak.org/", "ubuntu_packages": ["flatpak"]},
+    {"name": "snapd", "upstream": "https://github.com/canonical/snapd", "ubuntu_packages": ["snapd"]},
+    {"name": "restic", "upstream": "https://restic.net/", "ubuntu_packages": ["restic"]},
+    {"name": "distrobox", "upstream": "https://distrobox.it/", "ubuntu_packages": ["distrobox"]},
+    {"name": "podman", "upstream": "https://podman.io/", "ubuntu_packages": ["podman"]}
+  ]
+}
