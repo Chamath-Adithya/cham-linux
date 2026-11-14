@@ -13,6 +13,17 @@ not install the experimental Cham kernel. It does not yet demonstrate a full
 installation, upgrade, removal, rollback, Secure Boot or physical hardware
 compatibility. Do not use it on real disks or distribute it as a finished OS.
 
+In one disposable Secure Boot VM, the image reached the graphical installer,
+the interactive configuration was loaded, and a read-only inspection of the
+interrupted test disk showed `cham-linux-core 0.1.0~alpha8+iso1` installed,
+the Cham APT source present, and the base installer's bootloader step complete.
+The VM was killed by its memory limit before first boot, so the installed
+system's first boot, clean shutdown and end-to-end success are unconfirmed.
+This test installed Ubuntu kernel `7.0.0-43-generic`; an earlier build of that
+kernel exhibited suspend/resume failures on the developer's LOQ before its
+BIOS update. No post-update conclusion should be inferred. This image must not
+be treated as a validated solution for that laptop.
+
 ## Build
 
 Install `xorriso`, `gpgv`, `ripgrep`, `curl`, `dpkg-dev`, and the Ubuntu
