@@ -17,6 +17,15 @@ configuration and Ubuntu public certificate bundles accompany the binary.
 signature. The build contains a locally generated module-signing public key;
 its private key is not distributed. A rebuild is not claimed bit-reproducible.
 
+The kernel package and Ubuntu source archive are distributed in numbered
+parts because large direct uploads timed out. Download all `kernel.deb.part-*`
+files and `reassemble-kernel-alpha.py` to the same directory, then run
+`python3 reassemble-kernel-alpha.py kernel`. To reconstruct the Ubuntu source,
+download all `ubuntu-source.tar.bz2.part-*` files and run the same script with
+`source`. The script checks each reassembled file's expected SHA-256 before
+creating the output and refuses to overwrite an existing file. These checksums
+detect corruption; they do not authenticate the publisher.
+
 ## Test evidence
 
 - On one LOQ 15ARP9: boot, NVIDIA module load, GPU detection and CUDA memory
