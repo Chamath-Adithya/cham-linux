@@ -6,9 +6,10 @@ translations, reproducible hardware tests and code review.
 
 ## Before you start
 
-- Read [README.md](README.md), [SECURITY.md](SECURITY.md) and the current
-  [LICENSE](LICENSE). The license currently reserves rights; contact the owner
-  about permission before copying, modifying or redistributing project code.
+- Read [README.md](README.md), [SECURITY.md](SECURITY.md), [LICENSE](LICENSE)
+  and [LICENSING.md](LICENSING.md). Preserve attribution and do not submit
+  material unless you have the rights to contribute it under its applicable
+  license.
 - Open an issue to discuss substantial changes before investing significant
   time. Small documentation corrections can be proposed directly.
 - Use a disposable VM for risky changes. Never test boot, firmware, driver,

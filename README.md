@@ -62,15 +62,17 @@ Your experience can help shape Cham Linux: report a reproducible problem,
 suggest an improvement, review documentation or share a hardware test result.
 Start with [CONTRIBUTING.md](CONTRIBUTING.md) and our
 [community guidelines](CODE_OF_CONDUCT.md). Use [Issues][issues] for bugs and
-feature requests. Please review [SECURITY.md](SECURITY.md) before sharing
-security-sensitive information.
+feature requests and [Discussions][discussions] for questions and ideas.
+Please review [SECURITY.md](SECURITY.md) before sharing security-sensitive
+information.
 
-The current [license](LICENSE) reserves rights. Please read it before copying,
-modifying or redistributing project material; third-party components retain
-their own licenses. The project owner is considering an open-source license.
+Cham-owned software and documentation are available under GPL-3.0-or-later.
+See [LICENSE](LICENSE) and [LICENSING.md](LICENSING.md) for scope and
+third-party components, which retain their own licenses.
 
 Project code and configuration belong in version control. Personal files,
 recovery keys and databases belong in appropriate encrypted backups, not Git.
 
 [issues]: https://github.com/Chamath-Adithya/cham-linux/issues
+[discussions]: https://github.com/Chamath-Adithya/cham-linux/discussions
 [kernel-alpha]: https://github.com/Chamath-Adithya/cham-linux/releases/tag/kernel-alpha-0.0.1-lab2
