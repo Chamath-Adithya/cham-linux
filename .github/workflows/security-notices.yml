@@ -1,0 +1,25 @@
+name: Recent Ubuntu security notice report
+on:
+  schedule:
+    - cron: '37 4 * * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'manifests/security-components.json'
+      - 'system/security-notices.py'
+      - 'tests/test_security_notices.py'
+      - '.github/workflows/security-notices.yml'
+permissions:
+  contents: read
+jobs:
+  report:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Test matching
+        run: python3 tests/test_security_notices.py
+      - name: Check recent notices
+        run: |
+          set -o pipefail
+          python3 system/security-notices.py | tee -a "$GITHUB_STEP_SUMMARY"
