@@ -7,7 +7,7 @@
 5. Create a release candidate tag such as `v0.1.0-rc.1` after validation.
 6. Generate checksums, changelog and provenance. Keep the GitHub release as a draft until validation is complete.
 7. Promote the exact tested tag as an immutable release marker. The APT
-   workflow builds from protected `main`, which is allowed by the GitHub Pages
+   workflow is manually dispatched after validation; ordinary pushes do not publish. It builds from the selected ref, which must be reviewed before dispatch and allowed by the GitHub Pages
    deployment environment, signs repository metadata, and deploys it to
    GitHub Pages.
 
