@@ -1,0 +1,8 @@
+# Developer prototype: all normal installer questions remain interactive.
+# Do not use on real hardware until the complete VM install has been validated.
+autoinstall:
+  version: 1
+  interactive-sections:
+    - '*'
+  late-commands:
+    - sh /cdrom/cham/setup-target.sh
