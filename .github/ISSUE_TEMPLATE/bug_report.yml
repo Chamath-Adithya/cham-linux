@@ -1,0 +1,31 @@
+name: Bug report
+description: Report a reproducible problem with Cham Linux.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: "Please do not include passwords, recovery keys, tokens, serial numbers, private IPs or personal files. Report security vulnerabilities privately via SECURITY.md."
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Cham and Ubuntu versions, kernel, desktop session and hardware model. Remove serial numbers.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Relevant redacted logs or screenshots
+      description: Remove usernames, paths, network addresses and other private information.

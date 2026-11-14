@@ -14,4 +14,9 @@
 Installed machines receive the next `cham-linux-core` version through the same
 `apt update` and `apt upgrade` commands used for Ubuntu updates.
 
+The existing repository's APT suite is named `stable`, but its current
+packages are alpha. A separate validated stable channel has not been released.
+Experimental kernel prereleases are separate from this repository and are not
+automatically updated through APT.
+
 Security updates can use an expedited candidate cycle but still require package and boot checks. Stable tags and assets are immutable. Published artifacts are never replaced; a correction receives a new version.

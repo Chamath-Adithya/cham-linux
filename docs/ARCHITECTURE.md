@@ -11,6 +11,12 @@
 
 ## Update model
 
-`cham update --check` reports each source independently. Stable host updates are installed with APT. Cham packages are delivered through a future signed APT repository. Major OS, firmware, NVIDIA and database migrations are separate maintenance operations with their own recovery gates.
+`cham update --check` reports each source independently. Ubuntu host updates
+use APT. Cham packages also have a signed APT repository; its suite is named
+`stable` but currently contains alpha packages and is not a validated stable
+channel. Flatpak, Snap, firmware and containers have separate update systems.
+Major OS, firmware, NVIDIA and database migrations are separate maintenance
+operations with their own recovery gates. The experimental kernel prerelease
+is distributed separately and does not receive automatic APT security updates.
 
 The word latest means latest approved for a channel, not the newest upstream artifact. Candidates move through build, dependency, VM, rollback and physical-hardware tests.
