@@ -17,3 +17,26 @@ jobs:
         run: make package
       - name: Verify package
         run: cd dist && sha256sum -c SHA256SUMS && dpkg-deb --info *.deb && dpkg-deb --contents *.deb
+      - name: Smoke test install, reinstall and removal in an isolated Ubuntu container
+        run: |
+          mkdir -p /tmp/cham-old
+          dpkg-deb -R dist/*.deb /tmp/cham-old
+          sed -i 's/^Version:.*/Version: 0.0.1~smoketest/' /tmp/cham-old/DEBIAN/control
+          dpkg-deb --build /tmp/cham-old /tmp/cham-old.deb
+          docker run --rm -v "$PWD/dist:/packages:ro" ubuntu:24.04 bash -euxc '
+            export DEBIAN_FRONTEND=noninteractive
+            apt-get update
+            apt-get install -y --no-install-recommends /packages/*.deb
+            dpkg -s cham-linux-core | grep -Fx "Status: install ok installed"
+            apt-get install -y --reinstall --no-install-recommends /packages/*.deb
+            apt-get remove -y cham-linux-core
+            ! dpkg -s cham-linux-core 2>/dev/null | grep -Fx "Status: install ok installed"
+          '
+          docker run --rm -v "$PWD/dist:/packages:ro" -v /tmp/cham-old.deb:/tmp/cham-old.deb:ro ubuntu:24.04 bash -euxc '
+            export DEBIAN_FRONTEND=noninteractive
+            apt-get update
+            apt-get install -y --no-install-recommends /tmp/cham-old.deb
+            apt-get install -y --no-install-recommends /packages/*.deb
+            dpkg -s cham-linux-core | grep -Fx "Status: install ok installed"
+            ! dpkg -s cham-linux-core | grep -Fx "Version: 0.0.1~smoketest"
+          '
