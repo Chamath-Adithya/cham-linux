@@ -45,6 +45,8 @@ but its contents are **alpha**, not a validated stable channel.
 
 Start by reading [the architecture](docs/ARCHITECTURE.md),
 [recovery guidance](docs/RECOVERY.md) and [release process](docs/RELEASE.md).
+Learn about the project's purpose and current limits in the
+[product story](docs/PRODUCT-STORY.md).
 On a compatible Ubuntu test installation, review scripts before running them.
 To build the Cham package from a checkout without installing it:
 
