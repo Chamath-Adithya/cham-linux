@@ -26,6 +26,14 @@ download all `ubuntu-source.tar.bz2.part-*` files and run the same script with
 creating the output and refuses to overwrite an existing file. These checksums
 detect corruption; they do not authenticate the publisher.
 
+For example, from a new empty directory with GitHub CLI installed:
+
+```sh
+gh release download kernel-alpha-0.0.1-lab2 -R Chamath-Adithya/cham-linux \
+  --pattern 'kernel.deb.part-*' --pattern 'reassemble-kernel-alpha.py'
+python3 reassemble-kernel-alpha.py kernel
+```
+
 ## Test evidence
 
 - On one LOQ 15ARP9: boot, NVIDIA module load, GPU detection and CUDA memory
