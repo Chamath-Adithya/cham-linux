@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - 'system/check-ubuntu-oval.py'
+      - 'tests/test_security_feed.py'
       - '.github/workflows/security-feed-check.yml'
 permissions:
   contents: read
@@ -15,6 +16,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Test failure handling
+        run: python3 tests/test_security_feed.py
       - name: Check feed and publish job summary
         run: |
           set -o pipefail
