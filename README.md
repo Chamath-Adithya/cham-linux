@@ -51,6 +51,8 @@ independently maintained distribution in the [product architecture](docs/PRODUCT
 and the [distribution research and security automation plan](docs/DISTRIBUTION-RESEARCH.md).
 The initial, limited upstream notice matching process is described in
 [security triage](docs/SECURITY-TRIAGE.md).
+See [testing status and ways to help](docs/TESTING-STATUS.md) for verified
+results and open gaps before trying the project.
 On a compatible Ubuntu test installation, review scripts before running them.
 To build the Cham package from a checkout without installing it:
 
