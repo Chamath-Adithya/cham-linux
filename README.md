@@ -1,69 +1,76 @@
 # Cham Linux
 
-Cham Linux is an Ubuntu LTS based workstation product focused on reliable updates, recovery, developer tooling, AI workloads, and a consistent desktop. The host keeps one supported Ubuntu dependency graph. Arch tools run in a rootless development container and Kali runs in a VM.
+**A personal Linux workstation project, growing into a community.** Cham Linux
+brings a distinct desktop, practical diagnostics, recovery planning and a
+thoughtful update experience to an Ubuntu LTS foundation.
 
-Current channel: `alpha`. Current supported hardware profile: Lenovo LOQ 15ARP9 with Ryzen 7 7435HS and RTX 4060 Laptop GPU.
+> **Early alpha:** this project is under active development. There is no
+> general-purpose Cham Linux installation ISO or validated stable release yet.
+> Features, hardware support and update procedures can change. Use a test
+> system and make a verified backup before trying system-level changes.
 
-## Commands
+## What makes Cham Linux different?
 
-```bash
-./bin/cham doctor
-./bin/cham status
-./bin/cham update --check
-./bin/cham experience status
-./bin/cham ai status
-./bin/cham release-preflight
-```
+- **Cham Experience:** a reversible GNOME appearance profile with original
+  Cham artwork and sensible desktop settings.
+- **Workstation diagnostics:** inspect updates, services, hardware and selected
+  configuration risks with the `cham` command.
+- **A consistent foundation:** Ubuntu 24.04 LTS supplies the host packages;
+  Cham adds its own tools and presentation. Updates retain their source and
+  trust boundaries.
+- **Room to experiment:** Arch tools can run in a Distrobox environment, while
+  Kali can be used separately in a VM. Their package repositories are not
+  mixed into the Ubuntu host.
 
-Repair the currently detected Ubuntu testing-pocket and duplicate-source issue only after reviewing the script:
+Cham Linux has its own identity and goals, but it is currently **Ubuntu-based**.
+It is not an independently built operating system, and it is not an official
+Ubuntu or Kali product. Ubuntu, Linux, Kali and other names belong to their
+respective owners.
 
-```bash
-sudo ./system/repair-sources.sh
-```
+## Current status
 
-Build the Cham package without root:
+The main development machine is a Lenovo LOQ 15ARP9 with a Ryzen 7 7435HS and
+RTX 4060. Passing a test on that machine does not establish compatibility with
+other devices. The separate [experimental kernel prerelease][kernel-alpha]
+contains a test package, not an OS installer. It is unsigned for Secure Boot,
+is not delivered through APT, and does not receive automatic security updates.
+Read its limitations before considering a test.
 
-```bash
+Cham packages and Ubuntu packages can use APT once the Cham archive has been
+configured. Flatpak, Snap, firmware and containers have their own update
+mechanisms. The existing Cham APT suite is named `stable` for compatibility,
+but its contents are **alpha**, not a validated stable channel.
+
+## Explore the project
+
+Start by reading [the architecture](docs/ARCHITECTURE.md),
+[recovery guidance](docs/RECOVERY.md) and [release process](docs/RELEASE.md).
+On a compatible Ubuntu test installation, review scripts before running them.
+To build the Cham package from a checkout without installing it:
+
+```sh
 make package
 ```
 
-Enable native Cham Linux updates once on a new Ubuntu 24.04 installation:
+The `cham` tool provides diagnostics such as `cham status`, `cham doctor` and
+`cham update --check`. Run `cham --help` or inspect `bin/cham` for the version
+you are using. Do not run host repair scripts without reading what they change.
 
-```bash
-sudo ./install-apt-repository.sh
-```
+## Join the community
 
-After that, Ubuntu, official third-party applications, and Cham Linux packages
-use the normal APT workflow:
+Your experience can help shape Cham Linux: report a reproducible problem,
+suggest an improvement, review documentation or share a hardware test result.
+Start with [CONTRIBUTING.md](CONTRIBUTING.md) and our
+[community guidelines](CODE_OF_CONDUCT.md). Use [Issues][issues] for bugs and
+feature requests. Please review [SECURITY.md](SECURITY.md) before sharing
+security-sensitive information.
 
-```bash
-sudo apt update
-sudo apt upgrade
-```
+The current [license](LICENSE) reserves rights. Please read it before copying,
+modifying or redistributing project material; third-party components retain
+their own licenses. The project owner is considering an open-source license.
 
-## Desktop experience
+Project code and configuration belong in version control. Personal files,
+recovery keys and databases belong in appropriate encrypted backups, not Git.
 
-Cham Experience is a small, reversible GNOME user layer: a calm dark-blue
-visual system, original Cham Horizon wallpaper, battery percentage, weekday
-clock, practical window tiling, compact dock, and a branded application menu.
-It uses per-user `gsettings` values only; it never overwrites GNOME, Ubuntu, or
-driver files.
-
-```bash
-cham experience apply
-cham experience status
-cham experience reset
-```
-
-The application launcher is named **Cham Experience**. `reset` changes only
-the settings set by this profile back to GNOME defaults.
-
-Create the Arch development container after reviewing `containers/distrobox.ini`:
-
-```bash
-distrobox assemble create --file containers/distrobox.ini
-```
-
-The repository contains product source and reproducible configuration. Personal files, credentials and database contents belong in encrypted external backups.
-
-See [architecture](docs/ARCHITECTURE.md), [AI workstation](docs/AI-WORKSTATION.md), [release process](docs/RELEASE.md), [recovery](docs/RECOVERY.md), and the [LOQ validation procedure](docs/LOQ-VALIDATION.md).
+[issues]: https://github.com/Chamath-Adithya/cham-linux/issues
+[kernel-alpha]: https://github.com/Chamath-Adithya/cham-linux/releases/tag/kernel-alpha-0.0.1-lab2
